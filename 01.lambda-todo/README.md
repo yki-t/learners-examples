@@ -79,7 +79,7 @@ IAMからアクセスキーを作成し AWS CLIを認証するとCLIからも操
 
 #### package.json
 
-```json
+```javascript
 {
   "name": "lambda-crud-api",
   "version": "1.0.0",
