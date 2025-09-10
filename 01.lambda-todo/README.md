@@ -129,20 +129,24 @@ Checkポイント:
 ```javascript
 // DynamoDBを操作するための諸々
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  PutCommand,
+} from "@aws-sdk/lib-dynamodb";
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
 // Lambda関数のエントリポイント
 export const handler = async (event) => {
-
-  ddb.send({
-    TableName: "YourTableName", // <- ここは作成したDynamoDBテーブル名に置き換える
-    Item: {
-      id: crypto.randomUUID(), // <- 適当なIDを生成
-      message: "Hello, DynamoDB!",
-      createdAt: new Date().toISOString(),
-    },
-  });
+  await ddb.send(
+    new PutCommand({
+      TableName: "YourTableName", // <- ここは作成したDynamoDBテーブル名に置き換える
+      Item: {
+        id: crypto.randomUUID(), // <- 適当なIDを生成
+        message: "Hello, DynamoDB!",
+        createdAt: new Date().toISOString(),
+      },
+    })
+  );
 
   console.log("Event:", JSON.stringify(event, null, 2));
   return {
