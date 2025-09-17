@@ -1,0 +1,10 @@
+[Unit]
+Description=Node.js Web Application
+After=network.target
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user
+ExecStart=/usr/bin/node /home/ec2-user/app.js
+[Install]
+WantedBy=multi-user.target
