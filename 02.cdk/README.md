@@ -249,6 +249,12 @@ aws --version # 何か表示されればOK
 
 なければインストールしてください。
 
+AWSの認証情報を設定します。コンソールでIAMからアクセスキーを作成し、`aws configure`で設定します。
+
+```bash
+aws configure
+```
+
 ### 2-2. CDK開発の流れ
 1. CDKプロジェクトの初期化
 2. `npm run cdk -- deploy --require-approval never`でデプロイ
