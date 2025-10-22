@@ -161,7 +161,7 @@ mkdir -p frontend
 │       ├── bin/
 │       │   └── todo-app.ts
 │       ├── lib/
-│       │   └── todo-app-stack.ts
+│       │   └── cdk-stack.ts
 │       ├── cdk.json
 │       ├── package.json
 │       └── tsconfig.json
@@ -209,14 +209,14 @@ cdk synth
 
 ### CDKスタックの実装
 
-`infrastructure/cdk/lib/todo-app-stack.ts` を編集します。
+`infrastructure/cdk/lib/cdk-stack.ts` を編集します。
 
 ```typescript
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 
-export class TodoAppStack extends cdk.Stack {
+export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -305,7 +305,7 @@ export const handler = async (event) => {
 
 ### CDKスタックにLambda関数を追加
 
-`infrastructure/cdk/lib/todo-app-stack.ts` を更新します。
+`infrastructure/cdk/lib/cdk-stack.ts` を更新します。
 
 ```typescript
 import * as cdk from 'aws-cdk-lib';
@@ -314,7 +314,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
-export class TodoAppStack extends cdk.Stack {
+export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -390,7 +390,7 @@ cat response.json
 
 ### CDKスタックにAPI Gatewayを追加
 
-`infrastructure/cdk/lib/todo-app-stack.ts` を更新します。
+`infrastructure/cdk/lib/cdk-stack.ts` を更新します。
 
 ```typescript
 import * as cdk from 'aws-cdk-lib';
@@ -400,7 +400,7 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
-export class TodoAppStack extends cdk.Stack {
+export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -1186,7 +1186,7 @@ fetchTodos();
 
 ### CDKスタックにS3バケットとCloudFrontを追加
 
-`infrastructure/cdk/lib/todo-app-stack.ts` を更新します。
+`infrastructure/cdk/lib/cdk-stack.ts` を更新します。
 
 ```typescript
 import * as cdk from 'aws-cdk-lib';
@@ -1200,7 +1200,7 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
-export class TodoAppStack extends cdk.Stack {
+export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -1549,7 +1549,7 @@ aws cloudfront create-invalidation \
 
 ### CDKでのデプロイ自動化（オプション）
 
-`infrastructure/cdk/lib/todo-app-stack.ts` に以下を追加することで、CDKデプロイ時に自動的にNext.jsアプリもデプロイできます。
+`infrastructure/cdk/lib/cdk-stack.ts` に以下を追加することで、CDKデプロイ時に自動的にNext.jsアプリもデプロイできます。
 
 ```typescript
 // Next.jsアプリのデプロイ
