@@ -207,6 +207,22 @@ cdk synth
 
 ## Step 2: DynamoDBテーブルの作成（CDK）
 
+### スタック名の設定
+
+`infrastructure/cdk/bin/cdk.ts` を編集します。
+
+```typescript
+#!/usr/bin/env node
+import 'source-map-support/register';
+import * as cdk from 'aws-cdk-lib';
+import { CdkStack } from '../lib/cdk-stack';
+
+const app = new cdk.App();
+new CdkStack(app, 'CdkStack', {
+  stackName: 'CdkStack', // 衝突しない名前を設定してください
+});
+```
+
 ### CDKスタックの実装
 
 `infrastructure/cdk/lib/cdk-stack.ts` を編集します。
