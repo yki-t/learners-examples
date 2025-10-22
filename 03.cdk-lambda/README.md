@@ -159,7 +159,7 @@ mkdir -p frontend
 ├── infrastructure/
 │   └── cdk/
 │       ├── bin/
-│       │   └── todo-app.ts
+│       │   └── cdk.ts
 │       ├── lib/
 │       │   └── cdk-stack.ts
 │       ├── cdk.json
