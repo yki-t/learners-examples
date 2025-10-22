@@ -221,10 +221,7 @@ export class CdkStack extends cdk.Stack {
     super(scope, id, props);
 
     // DynamoDBテーブルの作成
-    // 衝突しない名前を設定してください
-    const tableName = 'TableName';
     const table = new dynamodb.Table(this, 'TodoTable', {
-      tableName: tableName,
       partitionKey: {
         name: 'id',
         type: dynamodb.AttributeType.STRING
@@ -319,10 +316,7 @@ export class CdkStack extends cdk.Stack {
     super(scope, id, props);
 
     // DynamoDBテーブルの作成
-    // 衝突しない名前を設定してください
-    const tableName = 'TableName';
     const table = new dynamodb.Table(this, 'TodoTable', {
-      tableName: tableName,
       partitionKey: {
         name: 'id',
         type: dynamodb.AttributeType.STRING
@@ -332,10 +326,7 @@ export class CdkStack extends cdk.Stack {
     });
 
     // Lambda関数の作成
-    // 衝突しない名前を設定してください
-    const functionName = 'FunctionName';
     const todoFunction = new lambda.Function(this, 'TodoFunction', {
-      functionName: functionName,
       runtime: lambda.Runtime.NODEJS_22_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../../../backend/lambda')),
@@ -405,10 +396,7 @@ export class CdkStack extends cdk.Stack {
     super(scope, id, props);
 
     // DynamoDBテーブルの作成
-    // 衝突しない名前を設定してください
-    const tableName = 'TableName';
     const table = new dynamodb.Table(this, 'TodoTable', {
-      tableName: tableName,
       partitionKey: {
         name: 'id',
         type: dynamodb.AttributeType.STRING
@@ -418,10 +406,7 @@ export class CdkStack extends cdk.Stack {
     });
 
     // Lambda関数の作成
-    // 衝突しない名前を設定してください
-    const functionName = 'FunctionName';
     const todoFunction = new lambda.Function(this, 'TodoFunction', {
-      functionName: functionName,
       runtime: lambda.Runtime.NODEJS_22_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../../../backend/lambda')),
@@ -435,10 +420,7 @@ export class CdkStack extends cdk.Stack {
     table.grantReadWriteData(todoFunction);
 
     // API Gatewayの作成
-    // 衝突しない名前を設定してください
-    const apiName = 'ApiName';
     const api = new apigateway.RestApi(this, 'TodoApi', {
-      restApiName: apiName,
       description: 'Todo API with Lambda and DynamoDB',
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
@@ -1207,10 +1189,7 @@ export class CdkStack extends cdk.Stack {
     // ... (既存のDynamoDB, Lambda, API Gatewayのコード)
 
     // フロントエンド用S3バケットの作成
-    // 衝突しない名前を設定してください
-    const bucketName = 'BucketName';
     const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
-      bucketName: bucketName,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       websiteIndexDocument: 'index.html',
