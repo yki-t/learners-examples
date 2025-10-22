@@ -1233,13 +1233,11 @@ fetchTodos();
 +    const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
 +      removalPolicy: cdk.RemovalPolicy.DESTROY,
 +      autoDeleteObjects: true,
-+      websiteIndexDocument: 'index.html',
-+      websiteErrorDocument: 'index.html',
 +      publicReadAccess: false,
 +      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL
 +    });
 +
-+    // CloudFrontディストリビューションの作成
++    // CloudFrontディストリビューションの作成（OAIが自動設定される）
 +    const distribution = new cloudfront.Distribution(this, 'WebsiteDistribution', {
 +      defaultBehavior: {
 +        origin: new origins.S3Origin(websiteBucket),
