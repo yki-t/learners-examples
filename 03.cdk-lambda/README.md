@@ -304,53 +304,53 @@ export const handler = async (event) => {
 
 `infrastructure/cdk/lib/cdk-stack.ts` を更新します。
 
-```typescript
-import * as cdk from 'aws-cdk-lib';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
-import * as path from 'path';
+```diff
+ import * as cdk from 'aws-cdk-lib';
+ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
++import * as lambda from 'aws-cdk-lib/aws-lambda';
+ import { Construct } from 'constructs';
++import * as path from 'path';
 
-export class CdkStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+ export class CdkStack extends cdk.Stack {
+   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+     super(scope, id, props);
 
-    // DynamoDBテーブルの作成
-    const table = new dynamodb.Table(this, 'TodoTable', {
-      partitionKey: {
-        name: 'id',
-        type: dynamodb.AttributeType.STRING
-      },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
+     // DynamoDBテーブルの作成
+     const table = new dynamodb.Table(this, 'TodoTable', {
+       partitionKey: {
+         name: 'id',
+         type: dynamodb.AttributeType.STRING
+       },
+       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+       removalPolicy: cdk.RemovalPolicy.DESTROY,
+     });
 
-    // Lambda関数の作成
-    const todoFunction = new lambda.Function(this, 'TodoFunction', {
-      runtime: lambda.Runtime.NODEJS_22_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../../backend/lambda')),
-      environment: {
-        TABLE_NAME: table.tableName
-      },
-      timeout: cdk.Duration.seconds(10)
-    });
-
-    // Lambda関数にDynamoDBテーブルへのアクセス権限を付与
-    table.grantReadWriteData(todoFunction);
-
-    // 出力
-    new cdk.CfnOutput(this, 'TodoTableName', {
-      value: table.tableName,
-      description: 'DynamoDB Table Name'
-    });
-
-    new cdk.CfnOutput(this, 'TodoFunctionName', {
-      value: todoFunction.functionName,
-      description: 'Lambda Function Name'
-    });
-  }
-}
++    // Lambda関数の作成
++    const todoFunction = new lambda.Function(this, 'TodoFunction', {
++      runtime: lambda.Runtime.NODEJS_22_X,
++      handler: 'index.handler',
++      code: lambda.Code.fromAsset(path.join(__dirname, '../../../backend/lambda')),
++      environment: {
++        TABLE_NAME: table.tableName
++      },
++      timeout: cdk.Duration.seconds(10)
++    });
++
++    // Lambda関数にDynamoDBテーブルへのアクセス権限を付与
++    table.grantReadWriteData(todoFunction);
++
+     // 出力
+     new cdk.CfnOutput(this, 'TodoTableName', {
+       value: table.tableName,
+       description: 'DynamoDB Table Name'
+     });
++
++    new cdk.CfnOutput(this, 'TodoFunctionName', {
++      value: todoFunction.functionName,
++      description: 'Lambda Function Name'
++    });
+   }
+ }
 ```
 
 ### デプロイ
@@ -383,80 +383,80 @@ cat response.json
 
 `infrastructure/cdk/lib/cdk-stack.ts` を更新します。
 
-```typescript
-import * as cdk from 'aws-cdk-lib';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import { Construct } from 'constructs';
-import * as path from 'path';
+```diff
+ import * as cdk from 'aws-cdk-lib';
+ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+ import * as lambda from 'aws-cdk-lib/aws-lambda';
++import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+ import { Construct } from 'constructs';
+ import * as path from 'path';
 
-export class CdkStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+ export class CdkStack extends cdk.Stack {
+   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+     super(scope, id, props);
 
-    // DynamoDBテーブルの作成
-    const table = new dynamodb.Table(this, 'TodoTable', {
-      partitionKey: {
-        name: 'id',
-        type: dynamodb.AttributeType.STRING
-      },
-      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
+     // DynamoDBテーブルの作成
+     const table = new dynamodb.Table(this, 'TodoTable', {
+       partitionKey: {
+         name: 'id',
+         type: dynamodb.AttributeType.STRING
+       },
+       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+       removalPolicy: cdk.RemovalPolicy.DESTROY,
+     });
 
-    // Lambda関数の作成
-    const todoFunction = new lambda.Function(this, 'TodoFunction', {
-      runtime: lambda.Runtime.NODEJS_22_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../../backend/lambda')),
-      environment: {
-        TABLE_NAME: table.tableName
-      },
-      timeout: cdk.Duration.seconds(10)
-    });
+     // Lambda関数の作成
+     const todoFunction = new lambda.Function(this, 'TodoFunction', {
+       runtime: lambda.Runtime.NODEJS_22_X,
+       handler: 'index.handler',
+       code: lambda.Code.fromAsset(path.join(__dirname, '../../../backend/lambda')),
+       environment: {
+         TABLE_NAME: table.tableName
+       },
+       timeout: cdk.Duration.seconds(10)
+     });
 
-    // Lambda関数にDynamoDBテーブルへのアクセス権限を付与
-    table.grantReadWriteData(todoFunction);
+     // Lambda関数にDynamoDBテーブルへのアクセス権限を付与
+     table.grantReadWriteData(todoFunction);
 
-    // API Gatewayの作成
-    const api = new apigateway.RestApi(this, 'TodoApi', {
-      description: 'Todo API with Lambda and DynamoDB',
-      defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS,
-        allowMethods: apigateway.Cors.ALL_METHODS,
-        allowHeaders: ['Content-Type', 'Authorization']
-      }
-    });
++    // API Gatewayの作成
++    const api = new apigateway.RestApi(this, 'TodoApi', {
++      description: 'Todo API with Lambda and DynamoDB',
++      defaultCorsPreflightOptions: {
++        allowOrigins: apigateway.Cors.ALL_ORIGINS,
++        allowMethods: apigateway.Cors.ALL_METHODS,
++        allowHeaders: ['Content-Type', 'Authorization']
++      }
++    });
++
++    // Lambda統合の作成
++    const todoIntegration = new apigateway.LambdaIntegration(todoFunction);
++
++    // /todos エンドポイントの作成
++    const todos = api.root.addResource('todos');
++    todos.addMethod('ANY', todoIntegration); // すべてのHTTPメソッドを許可
++
++    // /todos/{id} エンドポイントの作成
++    const todoItem = todos.addResource('{id}');
++    todoItem.addMethod('ANY', todoIntegration);
++
+     // 出力
+     new cdk.CfnOutput(this, 'TodoTableName', {
+       value: table.tableName,
+       description: 'DynamoDB Table Name'
+     });
 
-    // Lambda統合の作成
-    const todoIntegration = new apigateway.LambdaIntegration(todoFunction);
-
-    // /todos エンドポイントの作成
-    const todos = api.root.addResource('todos');
-    todos.addMethod('ANY', todoIntegration); // すべてのHTTPメソッドを許可
-
-    // /todos/{id} エンドポイントの作成
-    const todoItem = todos.addResource('{id}');
-    todoItem.addMethod('ANY', todoIntegration);
-
-    // 出力
-    new cdk.CfnOutput(this, 'TodoTableName', {
-      value: table.tableName,
-      description: 'DynamoDB Table Name'
-    });
-
-    new cdk.CfnOutput(this, 'TodoFunctionName', {
-      value: todoFunction.functionName,
-      description: 'Lambda Function Name'
-    });
-
-    new cdk.CfnOutput(this, 'ApiEndpoint', {
-      value: api.url,
-      description: 'API Gateway Endpoint'
-    });
-  }
-}
+     new cdk.CfnOutput(this, 'TodoFunctionName', {
+       value: todoFunction.functionName,
+       description: 'Lambda Function Name'
+     });
++
++    new cdk.CfnOutput(this, 'ApiEndpoint', {
++      value: api.url,
++      description: 'API Gateway Endpoint'
++    });
+   }
+ }
 ```
 
 ### デプロイ
@@ -544,100 +544,125 @@ AWS Management ConsoleのDynamoDBテーブルでデータが保存されてい�
 
 `backend/lambda/index.mjs` を更新して、CRUD操作を実装します。
 
-```javascript
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+```diff
+ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
++import { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 
-const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
-const TABLE_NAME = process.env.TABLE_NAME;
+ const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+ const TABLE_NAME = process.env.TABLE_NAME;
 
-// JSONレスポンスを返すためのユーティリティ
-const json = (statusCode, body = {}) => ({
-  statusCode,
-  headers: {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS"
-  },
-  body: JSON.stringify(body)
-});
++// JSONレスポンスを返すためのユーティリティ
++const json = (statusCode, body = {}) => ({
++  statusCode,
++  headers: {
++    "Content-Type": "application/json",
++    "Access-Control-Allow-Origin": "*",
++    "Access-Control-Allow-Headers": "Content-Type",
++    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS"
++  },
++  body: JSON.stringify(body)
++});
++
++// リクエストボディをパースするユーティリティ
++const parseBody = (event) => {
++  try {
++    return event.body ? JSON.parse(event.body) : {};
++  } catch {
++    return null;
++  }
++};
++
++// パスの判定
++const isTodosRoot = (path) => /^\/todos\/?$/.test(path);
++const isTodosById = (path) => /^\/todos\/([^/]+)\/?$/.test(path);
++const idFromPath = (path) => path.split("/").filter(Boolean).pop();
++
+ export const handler = async (event) => {
+-  console.log("Event:", JSON.stringify(event, null, 2));
++  const method = event.requestContext?.http?.method || event.httpMethod;
++  const path = event.requestContext?.http?.path || event.rawPath || event.path;
 
-// リクエストボディをパースするユーティリティ
-const parseBody = (event) => {
-  try {
-    return event.body ? JSON.parse(event.body) : {};
-  } catch {
-    return null;
-  }
-};
+-  // テストデータをDynamoDBに保存
+-  const testItem = {
+-    id: crypto.randomUUID(),
+-    message: "Hello, DynamoDB!",
+-    createdAt: new Date().toISOString()
+-  };
++  console.log(`${method} ${path}`);
 
-// パスの判定
-const isTodosRoot = (path) => /^\/todos\/?$/.test(path);
-const isTodosById = (path) => /^\/todos\/([^/]+)\/?$/.test(path);
-const idFromPath = (path) => path.split("/").filter(Boolean).pop();
+-  await ddb.send(new PutCommand({
+-    TableName: TABLE_NAME,
+-    Item: testItem
+-  }));
++  // OPTIONSはCORS対応のために常に200を返す
++  if (method === "OPTIONS") {
++    return json(200, { ok: true });
++  }
 
-export const handler = async (event) => {
-  const method = event.requestContext?.http?.method || event.httpMethod;
-  const path = event.requestContext?.http?.path || event.rawPath || event.path;
-
-  console.log(`${method} ${path}`);
-
-  // OPTIONSはCORS対応のために常に200を返す
-  if (method === "OPTIONS") {
-    return json(200, { ok: true });
-  }
-
-  try {
-    // ID指定での取得
-    if (method === "GET" && isTodosById(path)) {
-      const id = idFromPath(path);
-      const res = await ddb.send(new GetCommand({
-        TableName: TABLE_NAME,
-        Key: { id }
-      }));
-
-      if (!res.Item) {
-        return json(404, { message: "not found" });
-      }
-
-      return json(200, res.Item);
-    }
-
-    // 一覧取得
-    if (method === "GET" && isTodosRoot(path)) {
-      const limit = Math.min(
-        Number(event.queryStringParameters?.limit) || 20,
-        100
-      );
-      const cursor = event.queryStringParameters?.cursor;
-      const ExclusiveStartKey = cursor
-        ? JSON.parse(Buffer.from(cursor, "base64").toString("utf8"))
-        : undefined;
-
-      const res = await ddb.send(new ScanCommand({
-        TableName: TABLE_NAME,
-        Limit: limit,
-        ExclusiveStartKey
-      }));
-
-      const nextCursor = res.LastEvaluatedKey
-        ? Buffer.from(JSON.stringify(res.LastEvaluatedKey)).toString("base64")
-        : null;
-
-      return json(200, {
-        items: res.Items || [],
-        nextCursor
-      });
-    }
-
-    return json(404, { message: "route not found" });
-
-  } catch (err) {
-    console.error(err);
-    return json(500, { message: err.message || "error" });
-  }
-};
+-  return {
+-    statusCode: 200,
+-    headers: {
+-      "Content-Type": "application/json",
+-      "Access-Control-Allow-Origin": "*",
+-      "Access-Control-Allow-Headers": "Content-Type",
+-      "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS"
+-    },
+-    body: JSON.stringify({
+-      message: "Data saved to DynamoDB!",
+-      item: testItem
+-    })
+-  };
++  try {
++    // ID指定での取得
++    if (method === "GET" && isTodosById(path)) {
++      const id = idFromPath(path);
++      const res = await ddb.send(new GetCommand({
++        TableName: TABLE_NAME,
++        Key: { id }
++      }));
++
++      if (!res.Item) {
++        return json(404, { message: "not found" });
++      }
++
++      return json(200, res.Item);
++    }
++
++    // 一覧取得
++    if (method === "GET" && isTodosRoot(path)) {
++      const limit = Math.min(
++        Number(event.queryStringParameters?.limit) || 20,
++        100
++      );
++      const cursor = event.queryStringParameters?.cursor;
++      const ExclusiveStartKey = cursor
++        ? JSON.parse(Buffer.from(cursor, "base64").toString("utf8"))
++        : undefined;
++
++      const res = await ddb.send(new ScanCommand({
++        TableName: TABLE_NAME,
++        Limit: limit,
++        ExclusiveStartKey
++      }));
++
++      const nextCursor = res.LastEvaluatedKey
++        ? Buffer.from(JSON.stringify(res.LastEvaluatedKey)).toString("base64")
++        : null;
++
++      return json(200, {
++        items: res.Items || [],
++        nextCursor
++      });
++    }
++
++    return json(404, { message: "route not found" });
++
++  } catch (err) {
++    console.error(err);
++    return json(500, { message: err.message || "error" });
++  }
+ };
 ```
 
 ### デプロイと確認
@@ -660,64 +685,64 @@ curl https://<ApiEndpoint>/todos/<id>
 
 `backend/lambda/index.mjs` の`handler`関数に以下を追加します。
 
-```javascript
-export const handler = async (event) => {
-  const method = event.requestContext?.http?.method || event.httpMethod;
-  const path = event.requestContext?.http?.path || event.rawPath || event.path;
+```diff
+ export const handler = async (event) => {
+   const method = event.requestContext?.http?.method || event.httpMethod;
+   const path = event.requestContext?.http?.path || event.rawPath || event.path;
 
-  console.log(`${method} ${path}`);
+   console.log(`${method} ${path}`);
 
-  if (method === "OPTIONS") {
-    return json(200, { ok: true });
-  }
+   if (method === "OPTIONS") {
+     return json(200, { ok: true });
+   }
 
-  try {
-    // ID指定での取得
-    if (method === "GET" && isTodosById(path)) {
-      // ... (Step 6のコード)
-    }
+   try {
+     // ID指定での取得
+     if (method === "GET" && isTodosById(path)) {
+       // ... (Step 6のコード)
+     }
 
-    // 一覧取得
-    if (method === "GET" && isTodosRoot(path)) {
-      // ... (Step 6のコード)
-    }
+     // 一覧取得
+     if (method === "GET" && isTodosRoot(path)) {
+       // ... (Step 6のコード)
+     }
 
-    // 新規作成
-    if (method === "POST" && isTodosRoot(path)) {
-      const body = parseBody(event);
-      if (!body) return json(400, { message: "invalid JSON" });
++    // 新規作成
++    if (method === "POST" && isTodosRoot(path)) {
++      const body = parseBody(event);
++      if (!body) return json(400, { message: "invalid JSON" });
++
++      const { title, dueDate = null } = body;
++      if (!title || typeof title !== "string") {
++        return json(400, { message: "title is required" });
++      }
++
++      const id = crypto.randomUUID();
++      const now = new Date().toISOString();
++      const item = {
++        id,
++        title,
++        completed: false,
++        dueDate,
++        createdAt: now,
++        updatedAt: now
++      };
++
++      await ddb.send(new PutCommand({
++        TableName: TABLE_NAME,
++        Item: item
++      }));
++
++      return json(201, item);
++    }
++
+     return json(404, { message: "route not found" });
 
-      const { title, dueDate = null } = body;
-      if (!title || typeof title !== "string") {
-        return json(400, { message: "title is required" });
-      }
-
-      const id = crypto.randomUUID();
-      const now = new Date().toISOString();
-      const item = {
-        id,
-        title,
-        completed: false,
-        dueDate,
-        createdAt: now,
-        updatedAt: now
-      };
-
-      await ddb.send(new PutCommand({
-        TableName: TABLE_NAME,
-        Item: item
-      }));
-
-      return json(201, item);
-    }
-
-    return json(404, { message: "route not found" });
-
-  } catch (err) {
-    console.error(err);
-    return json(500, { message: err.message || "error" });
-  }
-};
+   } catch (err) {
+     console.error(err);
+     return json(500, { message: err.message || "error" });
+   }
+ };
 ```
 
 ### デプロイと確認
@@ -741,61 +766,62 @@ curl -X POST https://<ApiEndpoint>/todos \
 
 `backend/lambda/index.mjs` の`handler`関数に以下を追加します。
 
-```javascript
-export const handler = async (event) => {
-  // ... (前のコード)
+```diff
+ export const handler = async (event) => {
+   // ... (前のコード)
 
-  try {
-    // ... (GET, POST のコード)
+   try {
+     // ... (GET, POST のコード)
 
-    // 更新
-    if (method === "PUT" && isTodosById(path)) {
-      const id = idFromPath(path);
-      const body = parseBody(event);
-      if (!body) return json(400, { message: "invalid JSON" });
++    // 更新
++    if (method === "PUT" && isTodosById(path)) {
++      const id = idFromPath(path);
++      const body = parseBody(event);
++      if (!body) return json(400, { message: "invalid JSON" });
++
++      const allowed = {};
++      if ("title" in body) allowed.title = body.title;
++      if ("completed" in body) allowed.completed = body.completed;
++      if ("dueDate" in body) allowed.dueDate = body.dueDate;
++
++      const exprNames = {};
++      const exprValues = { ":u": new Date().toISOString() };
++      const sets = ["#u = :u"];
++
++      for (const [k, v] of Object.entries(allowed)) {
++        const nameKey = `#${k}`;
++        const valueKey = `:${k}`;
++        exprNames[nameKey] = k;
++        exprValues[valueKey] = v;
++        sets.push(`${nameKey} = ${valueKey}`);
++      }
++
++      if (sets.length === 1) {
++        return json(400, { message: "no updatable fields" });
++      }
++
++      const res = await ddb.send(new UpdateCommand({
++        TableName: TABLE_NAME,
++        Key: { id },
++        ConditionExpression: "attribute_exists(id)",
++        UpdateExpression: `SET ${sets.join(", ")}`,
++        ExpressionAttributeNames: { "#u": "updatedAt", ...exprNames },
++        ExpressionAttributeValues: exprValues,
++        ReturnValues: "ALL_NEW"
++      }));
++
++      return json(200, res.Attributes);
++    }
++
+     return json(404, { message: "route not found" });
 
-      const allowed = {};
-      if ("title" in body) allowed.title = body.title;
-      if ("completed" in body) allowed.completed = body.completed;
-      if ("dueDate" in body) allowed.dueDate = body.dueDate;
-
-      const exprNames = {};
-      const exprValues = { ":u": new Date().toISOString() };
-      const sets = ["#u = :u"];
-
-      for (const [k, v] of Object.entries(allowed)) {
-        const nameKey = `#${k}`;
-        const valueKey = `:${k}`;
-        exprNames[nameKey] = k;
-        exprValues[valueKey] = v;
-        sets.push(`${nameKey} = ${valueKey}`);
-      }
-
-      if (sets.length === 1) {
-        return json(400, { message: "no updatable fields" });
-      }
-
-      const res = await ddb.send(new UpdateCommand({
-        TableName: TABLE_NAME,
-        Key: { id },
-        ConditionExpression: "attribute_exists(id)",
-        UpdateExpression: `SET ${sets.join(", ")}`,
-        ExpressionAttributeNames: { "#u": "updatedAt", ...exprNames },
-        ExpressionAttributeValues: exprValues,
-        ReturnValues: "ALL_NEW"
-      }));
-
-      return json(200, res.Attributes);
-    }
-
-    return json(404, { message: "route not found" });
-
-  } catch (err) {
-    console.error(err);
-    const code = err.name === "ConditionalCheckFailedException" ? 404 : 500;
-    return json(code, { message: err.message || "error" });
-  }
-};
+   } catch (err) {
+     console.error(err);
+-    return json(500, { message: err.message || "error" });
++    const code = err.name === "ConditionalCheckFailedException" ? 404 : 500;
++    return json(code, { message: err.message || "error" });
+   }
+ };
 ```
 
 ### デプロイと確認
@@ -817,39 +843,39 @@ curl -X PUT https://<ApiEndpoint>/todos/<id> \
 
 `backend/lambda/index.mjs` の`handler`関数に以下を追加します。
 
-```javascript
-export const handler = async (event) => {
-  // ... (前のコード)
+```diff
+ export const handler = async (event) => {
+   // ... (前のコード)
 
-  try {
-    // ... (GET, POST, PUT のコード)
+   try {
+     // ... (GET, POST, PUT のコード)
 
-    // 削除
-    if (method === "DELETE" && isTodosById(path)) {
-      const id = idFromPath(path);
++    // 削除
++    if (method === "DELETE" && isTodosById(path)) {
++      const id = idFromPath(path);
++
++      await ddb.send(new DeleteCommand({
++        TableName: TABLE_NAME,
++        Key: { id },
++        ConditionExpression: "attribute_exists(id)"
++      }));
++
++      return {
++        statusCode: 204,
++        headers: {
++          "Access-Control-Allow-Origin": "*"
++        }
++      };
++    }
++
+     return json(404, { message: "route not found" });
 
-      await ddb.send(new DeleteCommand({
-        TableName: TABLE_NAME,
-        Key: { id },
-        ConditionExpression: "attribute_exists(id)"
-      }));
-
-      return {
-        statusCode: 204,
-        headers: {
-          "Access-Control-Allow-Origin": "*"
-        }
-      };
-    }
-
-    return json(404, { message: "route not found" });
-
-  } catch (err) {
-    console.error(err);
-    const code = err.name === "ConditionalCheckFailedException" ? 404 : 500;
-    return json(code, { message: err.message || "error" });
-  }
-};
+   } catch (err) {
+     console.error(err);
+     const code = err.name === "ConditionalCheckFailedException" ? 404 : 500;
+     return json(code, { message: err.message || "error" });
+   }
+ };
 ```
 
 ### デプロイと確認
@@ -1170,64 +1196,76 @@ fetchTodos();
 
 `infrastructure/cdk/lib/cdk-stack.ts` を更新します。
 
-```typescript
-import * as cdk from 'aws-cdk-lib';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
-import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
-import { Construct } from 'constructs';
-import * as path from 'path';
+```diff
+ import * as cdk from 'aws-cdk-lib';
+ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+ import * as lambda from 'aws-cdk-lib/aws-lambda';
+ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
++import * as s3 from 'aws-cdk-lib/aws-s3';
++import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
++import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+ import { Construct } from 'constructs';
+ import * as path from 'path';
 
-export class CdkStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+ export class CdkStack extends cdk.Stack {
+   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+     super(scope, id, props);
 
-    // ... (既存のDynamoDB, Lambda, API Gatewayのコード)
+     // ... (既存のDynamoDB, Lambda, API Gatewayのコード)
 
-    // フロントエンド用S3バケットの作成
-    const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-      websiteIndexDocument: 'index.html',
-      websiteErrorDocument: 'index.html',
-      publicReadAccess: false,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL
-    });
++    // フロントエンド用S3バケットの作成
++    const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
++      removalPolicy: cdk.RemovalPolicy.DESTROY,
++      autoDeleteObjects: true,
++      websiteIndexDocument: 'index.html',
++      websiteErrorDocument: 'index.html',
++      publicReadAccess: false,
++      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL
++    });
++
++    // CloudFrontディストリビューションの作成
++    const distribution = new cloudfront.Distribution(this, 'WebsiteDistribution', {
++      defaultBehavior: {
++        origin: new origins.S3Origin(websiteBucket),
++        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
++      },
++      defaultRootObject: 'index.html',
++      errorResponses: [
++        {
++          httpStatus: 404,
++          responseHttpStatus: 200,
++          responsePagePath: '/index.html'
++        }
++      ]
++    });
++
+     // 出力
++    new cdk.CfnOutput(this, 'WebsiteURL', {
++      value: `https://${distribution.distributionDomainName}`,
++      description: 'Website URL'
++    });
++
++    new cdk.CfnOutput(this, 'WebsiteBucketName', {
++      value: websiteBucket.bucketName,
++      description: 'S3 Bucket Name for Website'
++    });
++
+     new cdk.CfnOutput(this, 'TodoTableName', {
+       value: table.tableName,
+       description: 'DynamoDB Table Name'
+     });
 
-    // CloudFrontディストリビューションの作成
-    const distribution = new cloudfront.Distribution(this, 'WebsiteDistribution', {
-      defaultBehavior: {
-        origin: new origins.S3Origin(websiteBucket),
-        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
-      },
-      defaultRootObject: 'index.html',
-      errorResponses: [
-        {
-          httpStatus: 404,
-          responseHttpStatus: 200,
-          responsePagePath: '/index.html'
-        }
-      ]
-    });
+     new cdk.CfnOutput(this, 'TodoFunctionName', {
+       value: todoFunction.functionName,
+       description: 'Lambda Function Name'
+     });
 
-    // 出力
-    new cdk.CfnOutput(this, 'WebsiteURL', {
-      value: `https://${distribution.distributionDomainName}`,
-      description: 'Website URL'
-    });
-
-    new cdk.CfnOutput(this, 'WebsiteBucketName', {
-      value: websiteBucket.bucketName,
-      description: 'S3 Bucket Name for Website'
-    });
-
-    // ... (既存の出力)
-  }
-}
+     new cdk.CfnOutput(this, 'ApiEndpoint', {
+       value: api.url,
+       description: 'API Gateway Endpoint'
+     });
+   }
+ }
 ```
 
 ### デプロイ
