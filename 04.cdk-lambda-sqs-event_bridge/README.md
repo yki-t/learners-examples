@@ -270,7 +270,7 @@ npm run build
 cdk deploy --require-approval never
 ```
 
-出力された`OldFlagQueueUrl`と`OldFlagQueueArn`をメモしておきます。
+`OldFlagQueueUrl`と`OldFlagQueueArn`が出力されたことを確認します。
 
 ## Step 4: EventBridge Schedulerロールの作成とLambda関数への権限付与
 
@@ -695,19 +695,6 @@ curl https://<ApiEndpoint>/todos/$TASK_ID
    );
  }
 ```
-
-### ローカルで動作確認
-
-```bash
-cd frontend/nextjs
-npm run dev
-```
-
-ブラウザで`http://localhost:3000`にアクセスして、以下を確認します：
-1. 新しいタスクを作成
-2. 1分待つ
-3. ページをリロード
-4. タスクの背景が黄色くなり、"OLD"バッジが表示される
 
 ### 静的ビルドとS3デプロイ
 
