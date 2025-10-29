@@ -1557,6 +1557,14 @@ npm run dev
 
 ## Step 16: Next.jsの静的ビルドとS3デプロイ
 
+### 環境変数の確認
+
+`frontend/nextjs/.env.local` のAPI_ENDPOINTが実際のAPI Gateway URLになっていることを確認してください。
+
+```bash
+NEXT_PUBLIC_API_ENDPOINT=https://<実際のApiEndpoint>/todos
+```
+
 ### 静的ビルド
 
 ```bash
