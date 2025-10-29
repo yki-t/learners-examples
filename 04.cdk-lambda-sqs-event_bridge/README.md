@@ -718,43 +718,6 @@ aws cloudfront create-invalidation \
 
 ## Step 8: 動作確認とテスト
 
-### 総合テスト
-
-1. **タスク作成**
-   ```bash
-   curl -X POST https://<ApiEndpoint>/todos \
-     -H "Content-Type: application/json" \
-     -d '{"title": "Test Auto Old Flag"}'
-   ```
-
-2. **EventBridge Schedulerの確認**
-   ```bash
-   aws scheduler list-schedules --name-prefix old-flag
-   ```
-
-3. **1分待機**
-   ```bash
-   sleep 65
-   ```
-
-4. **SQSキューの確認**（メッセージが処理されているはず）
-   ```bash
-   aws sqs get-queue-attributes \
-     --queue-url <OldFlagQueueUrl> \
-     --attribute-names ApproximateNumberOfMessages
-   ```
-
-5. **DynamoDBで確認**
-   ```bash
-   aws dynamodb scan --table-name <TableName> --max-items 5
-   ```
-
-6. **CloudWatchログの確認**
-   ```bash
-   # Old Flag Lambda関数のログを確認
-   aws logs tail /aws/lambda/<OldFlagFunctionName> --follow
-   ```
-
 ### フロントエンドでの確認
 
 1. ブラウザで`WebsiteURL`にアクセス
