@@ -270,7 +270,7 @@ npm run build
 cdk deploy --require-approval never
 ```
 
-出力された`OldFlagQueueUrl`と`OldFlagQueueArn`をメモしておきます。
+`OldFlagQueueUrl`と`OldFlagQueueArn`が出力されたことを確認します。
 
 ## Step 4: EventBridge Schedulerロールの作成とLambda関数への権限付与
 
@@ -696,19 +696,6 @@ curl https://<ApiEndpoint>/todos/$TASK_ID
  }
 ```
 
-### ローカルで動作確認
-
-```bash
-cd frontend/nextjs
-npm run dev
-```
-
-ブラウザで`http://localhost:3000`にアクセスして、以下を確認します：
-1. 新しいタスクを作成
-2. 1分待つ
-3. ページをリロード
-4. タスクの背景が黄色くなり、"OLD"バッジが表示される
-
 ### 静的ビルドとS3デプロイ
 
 ```bash
@@ -730,43 +717,6 @@ aws cloudfront create-invalidation \
 ```
 
 ## Step 8: 動作確認とテスト
-
-### 総合テスト
-
-1. **タスク作成**
-   ```bash
-   curl -X POST https://<ApiEndpoint>/todos \
-     -H "Content-Type: application/json" \
-     -d '{"title": "Test Auto Old Flag"}'
-   ```
-
-2. **EventBridge Schedulerの確認**
-   ```bash
-   aws scheduler list-schedules --name-prefix old-flag
-   ```
-
-3. **1分待機**
-   ```bash
-   sleep 65
-   ```
-
-4. **SQSキューの確認**（メッセージが処理されているはず）
-   ```bash
-   aws sqs get-queue-attributes \
-     --queue-url <OldFlagQueueUrl> \
-     --attribute-names ApproximateNumberOfMessages
-   ```
-
-5. **DynamoDBで確認**
-   ```bash
-   aws dynamodb scan --table-name <TableName> --max-items 5
-   ```
-
-6. **CloudWatchログの確認**
-   ```bash
-   # Old Flag Lambda関数のログを確認
-   aws logs tail /aws/lambda/<OldFlagFunctionName> --follow
-   ```
 
 ### フロントエンドでの確認
 
