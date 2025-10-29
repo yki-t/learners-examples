@@ -1,8 +1,13 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, GetCommand, ScanCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { SchedulerClient, CreateScheduleCommand } from "@aws-sdk/client-scheduler";
 
 const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const scheduler = new SchedulerClient({});
 const TABLE_NAME = process.env.TABLE_NAME;
+const QUEUE_URL = process.env.QUEUE_URL;
+const QUEUE_ARN = process.env.QUEUE_ARN;
+const SCHEDULER_ROLE_ARN = process.env.SCHEDULER_ROLE_ARN
 
 // JSONレスポンスを返すためのユーティリティ
 const json = (statusCode, body = {}) => ({
@@ -100,6 +105,7 @@ export const handler = async (event) => {
         id,
         title,
         completed: false,
+        old: false,
         dueDate,
         createdAt: now,
         updatedAt: now
@@ -109,6 +115,30 @@ export const handler = async (event) => {
         TableName: TABLE_NAME,
         Item: item
       }));
+
+      // EventBridge Schedulerで1分後にスケジュールを登録
+      try {
+        const scheduleTime = new Date(Date.now() + 60 * 1000); // 1分後
+        const scheduleName = `old-flag-${id}`;
+
+        await scheduler.send(new CreateScheduleCommand({
+          Name: scheduleName,
+          ScheduleExpression: `at(${scheduleTime.toISOString().slice(0, 19)})`,
+          Target: {
+            Arn: QUEUE_ARN,
+            RoleArn: SCHEDULER_ROLE_ARN,
+            Input: JSON.stringify({ taskId: id })
+          },
+          FlexibleTimeWindow: {
+            Mode: 'OFF'
+          }
+        }));
+
+        console.log(`Scheduled old flag for task ${id} at ${scheduleTime.toISOString()}`);
+      } catch (scheduleErr) {
+        console.error("Failed to create schedule:", scheduleErr);
+        // スケジュール作成に失敗してもタスクは作成されているのでエラーにしない
+      }
 
       return json(201, item);
     }

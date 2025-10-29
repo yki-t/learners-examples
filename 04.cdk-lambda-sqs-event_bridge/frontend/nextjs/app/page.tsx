@@ -6,6 +6,7 @@ interface Todo {
   id: string;
   title: string;
   completed: boolean;
+  old?: boolean;
   dueDate?: string;
   createdAt: string;
   updatedAt: string;
@@ -134,7 +135,9 @@ export default function Home() {
               {todos.map((todo) => (
                 <li
                   key={todo.id}
-                  className="flex items-center gap-3 p-3 border-b border-gray-200 last:border-b-0"
+		  className={`flex items-center gap-3 p-3 border-b border-gray-200 last:border-b-0 ${
+                    todo.old ? 'bg-yellow-50' : ''
+                  }`}
                 >
                   <input
                     type="checkbox"
@@ -148,6 +151,11 @@ export default function Home() {
                     }`}
                   >
                     {todo.title}
+                    {todo.old && (
+                      <span className="ml-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded">
+                        OLD
+                      </span>
+                    )}
                   </span>
                   <button
                     onClick={() => deleteTodo(todo.id)}

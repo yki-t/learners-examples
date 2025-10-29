@@ -5,6 +5,9 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+import * as sqs from 'aws-cdk-lib/aws-sqs'
+import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
@@ -46,6 +49,62 @@ export class CdkStack extends cdk.Stack {
       }
     });
 
+    // SQSキューの作成
+    const oldFlagQueue = new sqs.Queue(this, 'OldFlagQueue', {
+      visibilityTimeout: cdk.Duration.seconds(30),
+      retentionPeriod: cdk.Duration.days(1),
+    });
+
+    // EventBridge Scheduler用のIAMロールを作成
+    const schedulerRole = new iam.Role(this, 'SchedulerRole', {
+      assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
+      description: 'Role for EventBridge Scheduler to send messages to SQS'
+    });
+
+    // SQSキューへのメッセージ送信権限を付与
+    oldFlagQueue.grantSendMessages(schedulerRole);
+
+    // CRUD Lambda関数にEventBridge Schedulerの操作権限を付与
+    todoFunction.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'scheduler:CreateSchedule',
+        'scheduler:DeleteSchedule'
+      ],
+      resources: ['*']
+    }));
+
+    // CRUD Lambda関数にSchedulerロールのPassRole権限を付与
+    todoFunction.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['iam:PassRole'],
+      resources: [schedulerRole.roleArn]
+    }));
+
+    // CRUD Lambda関数の環境変数にSQS Queue URLとScheduler Role ARNを追加
+    todoFunction.addEnvironment('QUEUE_URL', oldFlagQueue.queueUrl);
+    todoFunction.addEnvironment('QUEUE_ARN', oldFlagQueue.queueArn);
+    todoFunction.addEnvironment('SCHEDULER_ROLE_ARN', schedulerRole.roleArn);
+
+    // Old Flag付与Lambda関数の作成
+    const oldFlagFunction = new lambda.Function(this, 'OldFlagFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'old-flag.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../../backend/lambda')),
+      environment: {
+        TABLE_NAME: table.tableName
+      },
+      timeout: cdk.Duration.seconds(10)
+    });
+
+    // Old Flag Lambda関数にDynamoDBテーブルへのアクセス権限を付与
+    table.grantReadWriteData(oldFlagFunction);
+
+    // SQSキューをOld Flag Lambda関数のイベントソースに設定
+    oldFlagFunction.addEventSource(new lambdaEventSources.SqsEventSource(oldFlagQueue, {
+      batchSize: 1
+    }));
+
     // Lambda統合の作成
     const todoIntegration = new apigateway.LambdaIntegration(todoFunction);
 
@@ -83,6 +142,16 @@ export class CdkStack extends cdk.Stack {
     });
 
     // 出力
+    new cdk.CfnOutput(this, 'OldFlagQueueUrl', {
+      value: oldFlagQueue.queueUrl,
+      description: 'SQS Queue URL for Old Flag Processing'
+    });
+
+    new cdk.CfnOutput(this, 'OldFlagQueueArn', {
+      value: oldFlagQueue.queueArn,
+      description: 'SQS Queue ARN for Old Flag Processing'
+    });
+
     new cdk.CfnOutput(this, 'WebsiteURL', {
       value: `https://${distribution.distributionDomainName}`,
       description: 'Website URL'
