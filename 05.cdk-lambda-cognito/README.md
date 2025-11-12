@@ -866,10 +866,10 @@ export default function Home() {
               <div className="mb-6 p-4 bg-green-50 rounded-lg">
                 <h2 className="text-xl font-semibold mb-2">ようこそ！</h2>
                 <p className="text-gray-700">
-                  メールアドレス: <span className="font-mono">{user.signInDetails?.loginId}</span>
+                  メールアドレス: <span className="font-mono">{user?.signInDetails?.loginId}</span>
                 </p>
                 <p className="text-gray-700">
-                  ユーザーID: <span className="font-mono text-sm">{user.userId}</span>
+                  ユーザーID: <span className="font-mono text-sm">{user?.userId}</span>
                 </p>
               </div>
 
