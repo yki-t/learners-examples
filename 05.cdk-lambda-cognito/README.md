@@ -398,12 +398,18 @@ export const handler = async (event) => {
 
       const { displayName, bio } = body;
 
+      // 既存のプロフィールを取得してcreatedAtを保持
+      const existing = await ddb.send(new GetCommand({
+        TableName: TABLE_NAME,
+        Key: { userId }
+      }));
+
       const now = new Date().toISOString();
       const item = {
         userId,
         displayName: displayName || "",
         bio: bio || "",
-        createdAt: res.Item?.createdAt || now,
+        createdAt: existing.Item?.createdAt || now,
         updatedAt: now
       };
 
