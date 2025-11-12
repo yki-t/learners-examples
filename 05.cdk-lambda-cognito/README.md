@@ -84,7 +84,7 @@ cdk --version
 ### プロジェクト構造の作成
 
 ```bash
-cd 05.cognito
+cd 05.cdk-lambda-cognito
 mkdir -p infrastructure/cdk
 mkdir -p backend/lambda
 mkdir -p frontend
@@ -93,7 +93,7 @@ mkdir -p frontend
 最終的なディレクトリ構成：
 
 ```
-05.cognito/
+05.cdk-lambda-cognito/
 ├── README.md
 ├── infrastructure/
 │   └── cdk/
@@ -168,12 +168,6 @@ export class CdkStack extends cdk.Stack {
       authFlows: {
         userPassword: true, // ユーザー名とパスワードでの認証
         userSrp: true // SRP（Secure Remote Password）プロトコル
-      },
-      oAuth: {
-        flows: {
-          authorizationCodeGrant: false,
-          implicitCodeGrant: false
-        }
       }
     });
 
