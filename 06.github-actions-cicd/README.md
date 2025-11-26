@@ -147,11 +147,11 @@ cdk init app --language typescript
 npm install
 ```
 
-### 2-4. CDKスタックの実装
+### 2-4. スタック名の設定
+
+`infrastructure/cdk/bin/cdk.ts` を編集します。
 
 ```typescript
-// infrastructure/cdk/bin/cdk.ts
-
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
@@ -159,12 +159,15 @@ import { CdkStack } from '../lib/cdk-stack';
 
 const app = new cdk.App();
 new CdkStack(app, 'GitHubActionsDemoStack', {
-  stackName: 'GitHubActionsDemoStack',
+  stackName: 'GitHubActionsDemoStack', // 衝突しない名前を設定してください
 });
 ```
 
+### 2-5. CDKスタックの実装
+
+`infrastructure/cdk/lib/cdk-stack.ts` を編集します。
+
 ```typescript
-// infrastructure/cdk/lib/cdk-stack.ts
 
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -227,7 +230,7 @@ export class CdkStack extends cdk.Stack {
 }
 ```
 
-### 2-5. ローカルでのデプロイ確認
+### 2-6. ローカルでのデプロイ確認
 
 ```bash
 cd infrastructure/cdk
@@ -242,7 +245,7 @@ npm run build
 cdk deploy --require-approval never
 ```
 
-### 2-6. 動作確認
+### 2-7. 動作確認
 
 ```bash
 # curlでテスト
