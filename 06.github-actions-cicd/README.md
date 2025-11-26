@@ -419,11 +419,7 @@ jobs:
 
       - name: Deploy with CDK
         working-directory: infrastructure/cdk
-        run: npx cdk deploy --require-approval never --outputs-file outputs.json
-
-      - name: Display deployment outputs
-        working-directory: infrastructure/cdk
-        run: cat outputs.json
+        run: npx cdk deploy --require-approval never --ci --progress events
 ```
 
 ### 5-2. ワークフローファイルのコミット
