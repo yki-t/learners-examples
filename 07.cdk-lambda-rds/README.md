@@ -219,7 +219,7 @@ export class CdkStack extends cdk.Stack {
       securityGroups: [dbSecurityGroup],
       databaseName: 'tododb',
       credentials: rds.Credentials.fromGeneratedSecret('postgres', {
-        secretName: 'rds-todo-credentials',
+        secretName: `${this.stackName}-rds-todo-credentials`,
       }),
       allocatedStorage: 20,
       maxAllocatedStorage: 100,
