@@ -206,7 +206,7 @@ export class CdkStack extends cdk.Stack {
     // RDS PostgreSQLインスタンスの作成
     const dbInstance = new rds.DatabaseInstance(this, 'TodoDatabase', {
       engine: rds.DatabaseInstanceEngine.postgres({
-        version: rds.PostgresEngineVersion.VER_16_3,
+        version: rds.PostgresEngineVersion.VER_17,
       }),
       instanceType: ec2.InstanceType.of(
         ec2.InstanceClass.T3,
