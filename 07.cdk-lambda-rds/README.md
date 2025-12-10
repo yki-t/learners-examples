@@ -150,10 +150,7 @@ new CdkStack(app, 'RdsLambdaStack', {
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
-import * as path from 'path';
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -225,29 +222,9 @@ export class CdkStack extends cdk.Stack {
       maxAllocatedStorage: 100,
       backupRetention: cdk.Duration.days(7),
       deleteAutomatedBackups: true,
-      removalPolicy: cdk.RemovalPolicy.DESTROY, // 開発環境用：スタック削除時にRDSも削除
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
       deletionProtection: false,
     });
-
-    // Lambda関数の作成
-    const todoFunction = new lambda.Function(this, 'TodoFunction', {
-      runtime: lambda.Runtime.NODEJS_22_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../../backend/lambda')),
-      environment: {
-        DB_SECRET_ARN: dbInstance.secret?.secretArn || '',
-      },
-      timeout: cdk.Duration.seconds(30),
-      memorySize: 512,
-      vpc,
-      vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-      },
-      securityGroups: [lambdaSecurityGroup],
-    });
-
-    // Lambda関数にSecrets Managerへのアクセス権限を付与
-    dbInstance.secret?.grantRead(todoFunction);
 
     // 出力
     new cdk.CfnOutput(this, 'DbEndpoint', {
@@ -258,11 +235,6 @@ export class CdkStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'DbSecretArn', {
       value: dbInstance.secret?.secretArn || '',
       description: 'Database Secret ARN'
-    });
-
-    new cdk.CfnOutput(this, 'TodoFunctionName', {
-      value: todoFunction.functionName,
-      description: 'Lambda Function Name'
     });
   }
 }
@@ -277,10 +249,9 @@ cdk deploy --require-approval never
 ```
 
 このステップでは以下のリソースが作成されます：
-- VPC（パブリック、プライベート、データベースサブネット）
+- VPC
 - RDS PostgreSQLインスタンス
-- Secrets Manager（データベース接続情報）
-- Lambda関数（基本構成のみ、次ステップで実装）
+- Secrets Manager
 - セキュリティグループ
 
 **注意**: RDSインスタンスの作成には5〜10分程度かかります。
@@ -605,6 +576,63 @@ export const handler = async (event) => {
     return json(500, { message: err.message || "error" });
   }
 };
+```
+
+### CDKスタックにLambda関数を追加
+
+`infrastructure/cdk/lib/cdk-stack.ts` を更新します。
+
+```diff
+ import * as cdk from 'aws-cdk-lib';
+ import * as ec2 from 'aws-cdk-lib/aws-ec2';
+ import * as rds from 'aws-cdk-lib/aws-rds';
++import * as lambda from 'aws-cdk-lib/aws-lambda';
+ import { Construct } from 'constructs';
++import * as path from 'path';
+
+ export class CdkStack extends cdk.Stack {
+   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+     super(scope, id, props);
+
+     // ... (既存のVPC、セキュリティグループ、RDSのコード)
+
++    // Lambda関数の作成
++    const todoFunction = new lambda.Function(this, 'TodoFunction', {
++      runtime: lambda.Runtime.NODEJS_22_X,
++      handler: 'index.handler',
++      code: lambda.Code.fromAsset(path.join(__dirname, '../../../backend/lambda')),
++      environment: {
++        DB_SECRET_ARN: dbInstance.secret?.secretArn || '',
++      },
++      timeout: cdk.Duration.seconds(30),
++      memorySize: 512,
++      vpc,
++      vpcSubnets: {
++        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
++      },
++      securityGroups: [lambdaSecurityGroup],
++    });
++
++    // Lambda関数にSecrets Managerへのアクセス権限を付与
++    dbInstance.secret?.grantRead(todoFunction);
+
+     // 出力
+     new cdk.CfnOutput(this, 'DbEndpoint', {
+       value: dbInstance.dbInstanceEndpointAddress,
+       description: 'RDS Endpoint'
+     });
+
+     new cdk.CfnOutput(this, 'DbSecretArn', {
+       value: dbInstance.secret?.secretArn || '',
+       description: 'Database Secret ARN'
+     });
++
++    new cdk.CfnOutput(this, 'TodoFunctionName', {
++      value: todoFunction.functionName,
++      description: 'Lambda Function Name'
++    });
+   }
+ }
 ```
 
 ### デプロイ
